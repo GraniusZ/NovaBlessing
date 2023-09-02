@@ -1,5 +1,7 @@
+"use client"
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {useRouter} from "next/navigation";
+import {Database} from "@/lib/database.types";
 
 interface User {
   email: string;
@@ -11,7 +13,7 @@ interface User {
 
 
 export default function useCreateUser() {
-  const supabaseAuth = createClientComponentClient()
+    const supabaseAuth = createClientComponentClient<Database>()
   const router = useRouter();
 
     return async (user: User) => {
@@ -22,7 +24,7 @@ export default function useCreateUser() {
                 password: user.password,
                 options: {
                     data: {
-                        username: `@${user.userName}`,
+                        username: user.userName,
                         name: user.name,
                         role: user.role,
                     },

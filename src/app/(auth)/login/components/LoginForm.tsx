@@ -1,11 +1,10 @@
 "use client";
 
-import { Stack, TextField, Typography, MenuItem, Button } from "@mui/material";
-import ReactHookFormSelect from "./FormSelect";
+import { Stack, TextField, Typography, Button } from "@mui/material";
 import { useForm } from "react-hook-form";
-import useCreateUser from "@/hooks/auth/useCreateUser";
 import { useState } from "react";
 import Link from "next/link";
+import useLogin from "@/hooks/auth/useLogin";
 interface FormValues {
   email: string;
   userName: string;
@@ -13,34 +12,22 @@ interface FormValues {
   password: string;
   role: "Author" | "Commentator";
 }
-export const RegisterForm = () => {
-  const signUp = useCreateUser();
+export const LoginForm = () => {
+  const signIn = useLogin();
   const [err, setErr] = useState("");
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm<FormValues>({
-    mode: "onSubmit",
+    mode: "onChange",
   });
 
-  const authErrors = (error: any) => {
-    console.log(error.message);
-    switch (error.message) {
-      case `duplicate key value violates unique constraint "profiles_username_key"`:
-        return "Username already used";
-      case `User already registered`:
-        return "User already registered";
-      default:
-        return "SignUp failed. Please try again.";
-    }
-  };
   const onSubmit = async (data: FormValues) => {
     try {
-      await signUp(data);
+      await signIn(data);
     } catch (error: any) {
-      setErr(authErrors(error));
+      setErr("Wrong password or user does not exist");
     }
   };
 
@@ -55,30 +42,14 @@ export const RegisterForm = () => {
       message: "Invalid email address",
     },
   });
-  const { ref: nameRef, ...nameProps } = register("name", {
-    minLength: 3,
-    required: {
-      value: true,
-      message: "Please enter your name",
-    },
-  });
+
   const { ref: passwordRef, ...passwordProps } = register("password", {
     required: {
       value: true,
       message: "Please enter your password",
     },
   });
-  const { ref: usernameRef, ...usernameProps } = register("userName", {
-    minLength: 3,
-    required: {
-      value: true,
-      message: "Please enter your username",
-    },
-    pattern: {
-      value: /^[a-zA-Z0-9]*$/,
-      message: "Only letters and numbers are allowed",
-    },
-  });
+
   return (
     <>
       <form
@@ -101,27 +72,11 @@ export const RegisterForm = () => {
             justifyContent: "center",
           }}
         >
-          {" "}
-          <Typography variant="h5">Register</Typography>
-          <TextField
-            label={"Name"}
-            type="text"
-            error={!!errors.name}
-            helperText={errors?.name?.message}
-            inputRef={nameRef}
-            {...nameProps}
-          />
-          <TextField
-            label={"Username"}
-            type="text"
-            error={!!errors.userName}
-            helperText={errors?.userName?.message}
-            inputRef={usernameRef}
-            {...usernameProps}
-          />
+          <Typography variant="h5">Login</Typography>
           <TextField
             label={"Email"}
             type="email"
+            autoComplete="new-password"
             error={!!errors.email}
             helperText={errors?.email?.message}
             inputRef={emailRef}
@@ -130,20 +85,13 @@ export const RegisterForm = () => {
           <TextField
             label={"Password"}
             type="password"
+            autoComplete="new-password"
             error={!!errors.password}
             helperText={errors?.password?.message}
             inputRef={passwordRef}
             {...passwordProps}
           />
-          <ReactHookFormSelect
-            name="role"
-            label="Role"
-            control={control}
-            defaultValue={"Commentator"}
-          >
-            <MenuItem value={"Author"}>Author</MenuItem>
-            <MenuItem value={"Commentator"}>Commentator</MenuItem>
-          </ReactHookFormSelect>
+
           {err && <Typography color="error">{err}</Typography>}
           <Button
             variant="contained"
@@ -152,14 +100,14 @@ export const RegisterForm = () => {
           >
             Submit
           </Button>
-          <Link href={"/login"} style={{ textDecoration: "none" }}>
+          <Link href={"/register"} style={{ textDecoration: "none" }}>
             {" "}
             <Typography
               sx={{ textDecoration: "none", fontWeight: "medium" }}
               color={"#a39493"}
             >
               {" "}
-              Have account? Sign in
+              Don`t have account? Sign Up
             </Typography>
           </Link>
         </Stack>

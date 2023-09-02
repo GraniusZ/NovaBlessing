@@ -1,5 +1,6 @@
 import {createClientComponentClient} from "@supabase/auth-helpers-nextjs";
 import {useRouter} from "next/navigation";
+import {Database} from "@/lib/database.types";
 
 interface User {
   email: string;
@@ -9,7 +10,7 @@ interface User {
 
 
 export default function useLogin() {
-  const supabaseAuth = createClientComponentClient()
+    const supabaseAuth = createClientComponentClient<Database>()
   const router = useRouter();
 
     return async (user: User) => {

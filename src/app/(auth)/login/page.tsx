@@ -1,17 +1,17 @@
 import { NextPage } from "next";
-import { LoginForm } from "./LoginForm";
+import { LoginForm } from "./components/LoginForm";
 import { Box } from "@mui/material";
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
-import { cookies } from "next/headers";
+import { sessionCookies } from "@/cookies/sessionCookies";
 import { redirect } from "next/navigation";
+export const dynamic = "force-dynamic";
+export const metadata = {
+  title: "Login",
+};
 const Login: NextPage = async () => {
-  const supabase = createServerComponentClient({ cookies });
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const session = await sessionCookies();
 
   if (session) {
-    redirect("/");
+    redirect("/feed");
   }
   return (
     <>
@@ -28,4 +28,4 @@ const Login: NextPage = async () => {
   );
 };
 
-export default Login
+export default Login;
